@@ -16,9 +16,9 @@
    git clone git@github.com:SaD-Pr0gEr/aiogram-template.git
     ```
 2. Rename project name/description in `pyproject.toml`
-3. Install dependencies with command
+3. Install dependencies and activate poetry shell
     ```shell
-    poetry install
+    poetry install && poetry shell
     ```
 4. Copy `.env.dist` as `.env` and set all values
 5. Run `python bot.py`
