@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "online-store-bot"
+name = "aiogram-template"
 version = "0.0.1"
-description = "Online telegram bot store"
+description = "aiogram template"
 authors = ["SaD-Pr0ger <sad.pr0ger@gmail.com>"]
 readme = "README.md"
 
