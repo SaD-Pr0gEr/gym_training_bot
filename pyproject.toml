@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "online-store-bot"
+version = "0.0.1"
+description = "Online telegram bot store"
+authors = ["SaD-Pr0ger <sad.pr0ger@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "2.25.2"
+uvloop = "^0.19.0"
+ujson = "^5.9.0"
+aiodns = "^3.2.0"
+aiohttp = {version = "3.8.6", extras = ["speedups"]}
+environs = "^11.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

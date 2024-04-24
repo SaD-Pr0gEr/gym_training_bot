@@ -24,15 +24,16 @@ class Config:
     db: DbConfig
 
 
-def load_config(path: str = None):
+def load_config(path: str | None = None):
     env = Env()
-    env.read_env(path)
+    if path:
+        env.read_env(path)
 
     return Config(
         tg_bot=TgBot(
-            token=env.str("BOT_TOKEN"),
-            admin_ids=list(map(int, env.str("ADMINS").split(","))),
-            use_redis=env.bool("USE_REDIS"),
+            token=env.str('BOT_TOKEN'),
+            admin_ids=env.list('ADMINS'),
+            use_redis=env.bool('USE_REDIS'),
         ),
         db=DbConfig(
             host=env.str('DB_HOST'),
