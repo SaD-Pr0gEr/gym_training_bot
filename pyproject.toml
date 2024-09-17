@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "aiogram-template"
+name = "gym_training_bot"
 version = "0.0.1"
 description = "aiogram template"
 authors = ["SaD-Pr0ger <sad.pr0ger@gmail.com>"]
