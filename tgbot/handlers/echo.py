@@ -7,9 +7,9 @@ async def bot_echo(message: types.Message):
     text = [
         'Эхо без состояния.',
         'Сообщение:',
-        message.text
+        message.text,
+        '\nЧтобы всё сбросить пишите /start'
     ]
-
     await message.answer('\n'.join(text))
 
 
@@ -18,7 +18,8 @@ async def bot_echo_all(message: types.Message, state: FSMContext):
     text = [
         f'Эхо в состоянии {hcode(state_name)}',
         'Содержание сообщения:',
-        hcode(message.text)
+        hcode(message.text),
+        '\nЧтобы всё сбросить пишите /start'
     ]
     await message.answer('\n'.join(text))
 

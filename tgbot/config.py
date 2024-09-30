@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from environs import Env
 
 
-@dataclass
+@dataclass(frozen=True)
 class DbConfig:
     host: str
     port: int
@@ -17,7 +18,7 @@ class DbConfig:
         raise NotImplementedError
 
 
-@dataclass
+@dataclass(frozen=True)
 class PgDbConfig(DbConfig):
     password: str
     user: str
@@ -35,7 +36,7 @@ class PgDbConfig(DbConfig):
         return f'postgresql+asyncpg://' + self.db_url.split('//')[-1]
 
 
-@dataclass
+@dataclass(frozen=True)
 class RedisDbConfig(DbConfig):
     password: str | None = None
     user: str | None = None
@@ -54,30 +55,37 @@ class RedisDbConfig(DbConfig):
         return self.db_url
 
 
-@dataclass
+@dataclass(frozen=True)
 class TgBot:
     token: str
     admin_ids: list[int]
     use_redis: bool
 
 
-@dataclass
+@dataclass(frozen=True)
+class Misc:
+    BASE_DIR: Path = Path(__file__).parent.parent
+
+
+@dataclass(frozen=True)
 class Config:
     tg_bot: TgBot
     db: DbConfig
+    misc: Misc
 
 
 def load_config(path: str | None = None):
     env = Env()
     if path:
         env.read_env(path)
-
+    misc = Misc()
     return Config(
         tg_bot=TgBot(
             token=env.str('BOT_TOKEN'),
             admin_ids=env.list('ADMINS'),
             use_redis=env.bool('USE_REDIS'),
         ),
+        misc=misc,
         db=PgDbConfig(
             host=env.str('DB_HOST'),
             port=env.str('DB_PORT'),
