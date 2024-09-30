@@ -30,7 +30,7 @@ class BaseModelMixin:
                 query = query.where(getattr(cls, key) == value)
         result = await session.execute(query)
         if one:
-            return result.first()
+            return result.scalars().first()
         return result.scalars().all()
 
     @classmethod

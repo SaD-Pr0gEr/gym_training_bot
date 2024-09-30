@@ -4,3 +4,7 @@ from aiogram.types import ReplyKeyboardMarkup
 USER_REGISTER_KEYBOARD = ReplyKeyboardMarkup([[
     r_btn.REGISTER_BUTTON
 ]], resize_keyboard=True)
+
+TRAINER_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
+    [r_btn.ADD_PLAN_BUTTON, r_btn.PLANS_LIST_BUTTON]
+], resize_keyboard=True)

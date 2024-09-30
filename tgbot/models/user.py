@@ -19,11 +19,15 @@ class User(Model, BaseModelMixin):
     __tablename__ = 'users'
 
     tg_id: Mapped[int] = mapped_column(primary_key=True)
+    full_name: Mapped[str] = mapped_column(default='', server_default='')
     phone_number: Mapped[str]
     role: Mapped[UserRoles]
 
-    def __init__(self, tg_id: int, phone_number: str, role: UserRoles):
+    def __init__(
+        self, tg_id: int, full_name: str, phone_number: str, role: UserRoles
+    ):
         self.tg_id = tg_id
+        self.full_name = full_name
         self.phone_number = phone_number
         self.role = role
         super().__init__()

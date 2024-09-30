@@ -11,9 +11,10 @@ from alembic import context
 BASE_DIR = Path(__file__).parent.parent.parent
 sys.path.append(str(BASE_DIR))
 
-from tgbot.config import PgDbConfig, Misc
+from tgbot.config import PgDbConfig
 from tgbot.models.base import Model
 import tgbot.models.user
+import tgbot.models.training
 
 config = context.config
 
