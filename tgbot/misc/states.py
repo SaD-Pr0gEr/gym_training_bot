@@ -10,3 +10,9 @@ class UserRegisterState(StatesGroup):
 class AddTrainingPlanState(StatesGroup):
     type = State()
     count = State()
+
+
+class UserSettingsSetState(StatesGroup):
+    choose_field = State()
+    set_full_name = State()
+    set_role = State()

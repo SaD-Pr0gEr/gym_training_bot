@@ -8,6 +8,7 @@ class UserCommands(Enum):
 class UserButtonCommands(Enum):
     register = 'Зарегистрироваться 👤'
     profile = 'Профиль 👤'
+    settings = 'Изменить профиль ⚙️'
 
 
 class TrainerButtonCommands(Enum):

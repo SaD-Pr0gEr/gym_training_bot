@@ -16,5 +16,6 @@ async def my_profile_command(message: Message):
 
 def register_profile_handlers(dp: Dispatcher):
     dp.register_message_handler(
-        my_profile_command, text=UserButtonCommands.profile.value
+        my_profile_command, text=UserButtonCommands.profile.value,
+        logged_user=True
     )

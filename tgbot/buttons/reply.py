@@ -8,3 +8,4 @@ REGISTER_BUTTON = KeyboardButton(
 ADD_PLAN_BUTTON = KeyboardButton(TrainerButtonCommands.add_plan.value)
 PLANS_LIST_BUTTON = KeyboardButton(TrainerButtonCommands.plans_list.value)
 USER_PROFILE_BUTTON = KeyboardButton(UserButtonCommands.profile.value)
+USER_SETTINGS_BUTTON = KeyboardButton(UserButtonCommands.settings.value)

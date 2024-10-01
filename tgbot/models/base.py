@@ -41,5 +41,15 @@ class BaseModelMixin:
         await session.execute(query)
         await session.commit()
 
+    @classmethod
+    async def update(
+            cls, session: AsyncSession, filter_data: dict, update_data: dict
+    ):
+        query = sa.update(cls).values(**update_data)
+        for key, value in filter_data.items():
+            query = query.where(getattr(cls, key) == value)
+        await session.execute(query)
+        await session.commit()
+
     def display_text(self) -> str:
         raise NotImplementedError
