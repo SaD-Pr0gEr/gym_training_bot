@@ -40,3 +40,6 @@ class BaseModelMixin:
             query = query.where(getattr(cls, key) == value)
         await session.execute(query)
         await session.commit()
+
+    def display_text(self) -> str:
+        raise NotImplementedError

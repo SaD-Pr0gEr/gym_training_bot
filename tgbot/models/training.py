@@ -35,6 +35,12 @@ class TrainingPlan(Model, BaseModelMixin):
         self.trainer_id = trainer_id
         super().__init__()
 
+    def display_text(self) -> str:
+        return (
+            f'<b>{getattr(TrainingTypesDisplay, self.type.name).value}</b>\n'
+            f'Кол-во тренеровок: {self.count}'
+        )
+
     def __str__(self):
         return f'{self.trainer_id}: {self.type}'
 

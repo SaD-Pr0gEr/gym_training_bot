@@ -32,6 +32,15 @@ class User(Model, BaseModelMixin):
         self.role = role
         super().__init__()
 
+    def display_text(self) -> str:
+        return (
+            f'<b>Ваш профиль 👤</b>\n'
+            f'ID: {self.tg_id}\n'
+            f'Ф.И.О: {self.full_name}\n'
+            f'Номер телефона: {self.phone_number}\n'
+            f'Роль: {getattr(UserRolesDisplay, self.role.value).value}\n'
+        )
+
     def __str__(self):
         return f'{self.tg_id}'
 

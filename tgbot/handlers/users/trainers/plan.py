@@ -10,7 +10,6 @@ from tgbot.misc.states import AddTrainingPlanState
 from tgbot.models.training import (
     TrainingTypes, TrainingTypesDisplay, TrainingPlan
 )
-from tgbot.utils.text import display_plan_text
 
 
 async def add_plan_command(message: Message):
@@ -78,13 +77,17 @@ async def training_list_command(message: Message):
         plans = await TrainingPlan.select(
             session, {'trainer_id': message.from_user.id}
         )
-    txt = '\n\n'.join(map(display_plan_text, plans))
+    if not plans:
+        await message.answer('У вас нет тренировочных планов')
+        return
+    txt = '\n\n'.join(map(lambda obj: obj.display_text(), plans))
     await message.answer(txt)
 
 
 def register_trainer_plans_handlers(dp: Dispatcher):
     dp.register_message_handler(
-        add_plan_command, text=TrainerButtonCommands.add_plan.value
+        add_plan_command, text=TrainerButtonCommands.add_plan.value,
+        is_trainer=True
     )
     dp.register_callback_query_handler(
         add_plan_count, state=AddTrainingPlanState.type

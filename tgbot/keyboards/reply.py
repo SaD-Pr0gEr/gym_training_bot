@@ -6,5 +6,6 @@ USER_REGISTER_KEYBOARD = ReplyKeyboardMarkup([[
 ]], resize_keyboard=True)
 
 TRAINER_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
-    [r_btn.ADD_PLAN_BUTTON, r_btn.PLANS_LIST_BUTTON]
+    [r_btn.ADD_PLAN_BUTTON, r_btn.PLANS_LIST_BUTTON],
+    [r_btn.USER_PROFILE_BUTTON]
 ], resize_keyboard=True)
