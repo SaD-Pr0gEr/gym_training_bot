@@ -19,3 +19,5 @@ class TrainerButtonCommands(Enum):
 class TraineeButtonCommands(Enum):
     buy_plan = 'Купить тренировку 💳'
     my_subscribes = 'Мои тренировки 🏋️‍♂️'
+    start_training = 'Начать тренировку 🏋️‍♂️'
+    history = 'История тренировок 📜'

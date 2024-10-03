@@ -23,7 +23,10 @@ class Model(DeclarativeBase):
 class BaseModelMixin:
 
     @classmethod
-    async def select(cls, session: AsyncSession, filter_data: dict | None = None, one: bool = False):
+    async def select(
+            cls, session: AsyncSession, filter_data: dict | None = None,
+            one: bool = False
+    ):
         query = sa.select(cls)
         if filter_data:
             for key, value in filter_data.items():
@@ -34,7 +37,7 @@ class BaseModelMixin:
         return result.scalars().all()
 
     @classmethod
-    async def delete(cls, session: AsyncSession, filter_data: dict):
+    async def delete(cls, session: AsyncSession, filter_data: dict) -> None:
         query = sa.delete(cls)
         for key, value in filter_data.items():
             query = query.where(getattr(cls, key) == value)
@@ -43,7 +46,7 @@ class BaseModelMixin:
     @classmethod
     async def update(
             cls, session: AsyncSession, filter_data: dict, update_data: dict
-    ):
+    ) -> None:
         query = sa.update(cls).values(**update_data)
         for key, value in filter_data.items():
             query = query.where(getattr(cls, key) == value)

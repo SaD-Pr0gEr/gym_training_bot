@@ -16,6 +16,7 @@ from tgbot.models.base import Model
 import tgbot.models.user
 import tgbot.models.training
 import tgbot.models.subscribe
+import tgbot.models.sessions
 
 config = context.config
 

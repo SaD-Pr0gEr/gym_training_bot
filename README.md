@@ -1,4 +1,4 @@
-# Aiogram bot template
+# Training subscribes bot prototype
 
 ## Requirements
 * `python 3.11<=`

@@ -7,8 +7,9 @@ ROLE_CHANGE_BTN = InlineKeyboardButton('Роль в зале', callback_data='ro
 def make_inline_btn_from_obj(
         obj: object, display_attr_name: str, callback_data_attr_name: str
 ) -> InlineKeyboardButton:
+    attr = getattr(obj, display_attr_name)
     return InlineKeyboardButton(
-        str(getattr(obj, display_attr_name)),
+        str(attr if not callable(attr) else attr()),
         callback_data=str(getattr(obj, callback_data_attr_name))
     )
 

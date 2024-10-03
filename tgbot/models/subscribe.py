@@ -44,6 +44,12 @@ class TrainingSubscription(Model, BaseModelMixin):
             f'({self.plan.trainer.phone_number})'
         )
 
+    def inline_btn_text(self) -> str:
+        plan_type = getattr(TrainingTypesDisplay, self.plan.type.name).value
+        return (
+            f'{plan_type}({self.plan.trainer.full_name}) - {self.balance} шт.'
+        )
+
     @property
     def end_date(self) -> datetime:
         return self.buy_date + timedelta(days=31)

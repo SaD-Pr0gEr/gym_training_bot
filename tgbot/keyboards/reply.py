@@ -12,5 +12,6 @@ TRAINER_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
 
 TRAINEE_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
     [r_btn.USER_PROFILE_BUTTON, r_btn.USER_SETTINGS_BUTTON],
-    [r_btn.BUY_PLAN_BUTTON, r_btn.MY_SUBS_BUTTON]
+    [r_btn.BUY_PLAN_BUTTON, r_btn.MY_SUBS_BUTTON],
+    [r_btn.START_TRAINING_BUTTON, r_btn.HISTORY_COMMAND]
 ], resize_keyboard=True)

@@ -49,13 +49,22 @@ async def handle_other_callbacks(callback: CallbackQuery):
                     )
                 )
                 if subscribe:
-                    await TrainingSubscription.update(
-                        session, {'id': subscribe.id},
-                        {
-                            'buy_date': datetime.now(),
-                            'balance': subscribe.balance + plan.count
-                        }
-                    )
+                    if subscribe.active:
+                        await TrainingSubscription.update(
+                            session, {'id': subscribe.id},
+                            {
+                                'buy_date': datetime.now(),
+                                'balance': subscribe.balance + plan.count
+                            }
+                        )
+                    else:
+                        await TrainingSubscription.update(
+                            session, {'id': subscribe.id},
+                            {
+                                'buy_date': datetime.now(),
+                                'balance': subscribe.balance
+                            }
+                        )
                 else:
                     subscribe = TrainingSubscription(
                         buyer_id, plan_id, datetime.now(), plan.count
