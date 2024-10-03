@@ -25,3 +25,8 @@ class SubscribeUserState(StatesGroup):
 
 class StartTrainState(StatesGroup):
     choose_plan = State()
+
+
+class RemoveTrainingSessionManualState(StatesGroup):
+    choose_plan = State()
+    choose_user = State()
