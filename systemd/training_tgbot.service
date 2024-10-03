@@ -1,0 +1,14 @@
+[Unit]
+Description=Training bot
+After=network.target
+
+[Service]
+User=training_bot
+Group=training_bot
+Type=simple
+WorkingDirectory=/home/training_bot/projects/gym_training_bot
+ExecStart=poetry run python bot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
