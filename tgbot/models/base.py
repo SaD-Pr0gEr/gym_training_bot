@@ -39,7 +39,6 @@ class BaseModelMixin:
         for key, value in filter_data.items():
             query = query.where(getattr(cls, key) == value)
         await session.execute(query)
-        await session.commit()
 
     @classmethod
     async def update(
@@ -49,7 +48,6 @@ class BaseModelMixin:
         for key, value in filter_data.items():
             query = query.where(getattr(cls, key) == value)
         await session.execute(query)
-        await session.commit()
 
-    def display_text(self) -> str:
+    def display_text(self, *args, **kwargs) -> str:
         raise NotImplementedError

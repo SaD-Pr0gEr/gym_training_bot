@@ -1,9 +1,10 @@
 from enum import Enum
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tgbot.models.base import Model, BaseModelMixin
+from tgbot.models.user import User
 
 
 class TrainingTypes(Enum):
@@ -29,6 +30,8 @@ class TrainingPlan(Model, BaseModelMixin):
     type: Mapped[TrainingTypes]
     trainer_id: Mapped[int] = mapped_column(ForeignKey('users.tg_id'))
 
+    trainer: Mapped["User"] = relationship(lazy='joined')
+
     def __init__(self, count: int, type_: TrainingTypes, trainer_id: int):
         self.count = count
         self.type = type_
@@ -39,6 +42,12 @@ class TrainingPlan(Model, BaseModelMixin):
         return (
             f'<b>{getattr(TrainingTypesDisplay, self.type.name).value}</b>\n'
             f'Кол-во тренеровок: {self.count}'
+        )
+
+    def inline_btn_text(self) -> str:
+        return (
+            f'{getattr(TrainingTypesDisplay, self.type.name).value}'
+            f'({self.count} шт.)'
         )
 
     def __str__(self):

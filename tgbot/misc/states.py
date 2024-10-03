@@ -16,3 +16,8 @@ class UserSettingsSetState(StatesGroup):
     choose_field = State()
     set_full_name = State()
     set_role = State()
+
+
+class SubscribeUserState(StatesGroup):
+    choose_trainer = State()
+    choose_plan = State()

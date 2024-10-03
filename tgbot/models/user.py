@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,6 +23,7 @@ class User(Model, BaseModelMixin):
     full_name: Mapped[str] = mapped_column(default='', server_default='')
     phone_number: Mapped[str]
     role: Mapped[UserRoles]
+    register_date: Mapped[datetime] = mapped_column(default=datetime.now())
 
     def __init__(
         self, tg_id: int, full_name: str, phone_number: str, role: UserRoles
@@ -39,6 +41,7 @@ class User(Model, BaseModelMixin):
             f'Ф.И.О: {self.full_name}\n'
             f'Номер телефона: {self.phone_number}\n'
             f'Роль: {getattr(UserRolesDisplay, self.role.value).value}\n'
+            f'Дата регистрации: {self.register_date}'
         )
 
     def __str__(self):

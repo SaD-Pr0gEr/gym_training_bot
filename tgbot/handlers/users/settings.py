@@ -9,6 +9,7 @@ from tgbot.keyboards.inline import (
 )
 from tgbot.misc.states import UserSettingsSetState
 from tgbot.models.user import UserRoles, UserRolesDisplay, User
+from tgbot.utils.user import define_user_keyboard
 
 
 async def profile_settings_command(message: Message):
@@ -53,13 +54,18 @@ async def set_role_callback(callback: CallbackQuery, state: FSMContext):
             session, {'tg_id': callback.from_user.id},
             {field_name: UserRoles(callback.data)}
         )
+        await session.commit()
+        user = await User.select(
+            session, {'tg_id': callback.from_user.id}, True
+        )
     await callback.bot.delete_message(
         callback.from_user.id,
         callback.message.message_id
     )
     await callback.bot.send_message(
         callback.from_user.id,
-        'Успешно обновил профиль'
+        'Успешно обновил профиль',
+        reply_markup=define_user_keyboard(user)
     )
 
 
@@ -73,6 +79,7 @@ async def set_full_name(message: Message, state: FSMContext):
             session, {'tg_id': message.from_user.id},
             {field_name: message.text}
         )
+        await session.commit()
     await message.answer(
         'Успешно обновил профиль'
     )

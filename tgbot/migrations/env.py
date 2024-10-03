@@ -15,6 +15,7 @@ from tgbot.config import PgDbConfig
 from tgbot.models.base import Model
 import tgbot.models.user
 import tgbot.models.training
+import tgbot.models.subscribe
 
 config = context.config
 
