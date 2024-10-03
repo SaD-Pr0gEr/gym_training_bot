@@ -15,6 +15,7 @@ class TrainerButtonCommands(Enum):
     add_plan = 'Добавить план тренировки 🤼'
     plans_list = 'Мои планы тренировок 📋'
     remove_training_manual = 'Вычитать тренировку вручную 🏋️‍♂️'
+    my_subscribers = 'Мои подписчики 👤'
 
 
 class TraineeButtonCommands(Enum):

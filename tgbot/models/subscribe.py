@@ -44,6 +44,18 @@ class TrainingSubscription(Model, BaseModelMixin):
             f'({self.plan.trainer.phone_number})'
         )
 
+    def display_text_buyer(self) -> str:
+        plan_type = getattr(TrainingTypesDisplay, self.plan.type.name).value
+        return (
+            f'Тренерующийся: {self.subscriber.full_name}'
+            f'({self.subscriber.phone_number})\n'
+            f'Тип тренировки: {plan_type}\n'
+            f'Остаток: {self.balance}\n'
+            f'Дата покупки: {self.buy_date.strftime("%d.%m.%Y %H:%M")}\n'
+            f'Действует до: {self.end_date.strftime("%d.%m.%Y %H:%M")}\n'
+            f'Просрочен: {"Да" if self.expired else "Нет"}'
+        )
+
     def inline_btn_text(self) -> str:
         plan_type = getattr(TrainingTypesDisplay, self.plan.type.name).value
         return (
