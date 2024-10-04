@@ -1,5 +1,7 @@
 from datetime import datetime
 from enum import Enum
+
+from sqlalchemy import BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Model, BaseModelMixin
@@ -19,7 +21,7 @@ class User(Model, BaseModelMixin):
 
     __tablename__ = 'users'
 
-    tg_id: Mapped[int] = mapped_column(primary_key=True)
+    tg_id: Mapped[int] = mapped_column(BigInteger(), primary_key=True)
     full_name: Mapped[str] = mapped_column(default='', server_default='')
     phone_number: Mapped[str]
     role: Mapped[UserRoles]
