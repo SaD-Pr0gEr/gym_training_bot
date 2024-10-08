@@ -100,10 +100,25 @@ async def user_subscribers(message: Message):
             .where(TrainingSubscription.plan_id.in_(plan_ids))
         )
         result = (await session.execute(query)).scalars().all()
-        txt = 'Покупатели тарифов\n\n' + '\n\n'.join(map(
-            lambda obj: obj.display_text_buyer(), result
-        ))
-        await message.answer(txt)
+    msg_parts = []
+    last_idx = len(result)
+    current_idx = 0
+    while current_idx < last_idx:
+        starts_with = ''
+        if not current_idx:
+            starts_with = 'Покупатели тарифов\n\n'
+        remainder = last_idx - current_idx
+        if remainder > 4:
+            end = 4
+        else:
+            end = remainder
+        txt_list = []
+        for idx in range(current_idx, current_idx + end):
+            txt_list.append(result[idx].display_text_buyer())
+        msg_parts.append(starts_with + '\n\n'.join(txt_list))
+        current_idx += end
+    for msg in msg_parts:
+        await message.answer(msg)
 
 
 def register_trainer_subscribe_handlers(dp: Dispatcher):
