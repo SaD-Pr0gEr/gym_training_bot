@@ -3,7 +3,6 @@ from datetime import datetime
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from aiogram.utils.markdown import hcode
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from tgbot.models.subscribe import TrainingSubscription
@@ -12,23 +11,17 @@ from tgbot.models.training import TrainingPlan
 
 async def bot_echo(message: types.Message):
     text = [
-        'Эхо без состояния.',
-        'Сообщение:',
+        'Неизвестная команда:',
         message.text,
-        '\nЧтобы всё сбросить пишите /start'
     ]
     await message.answer('\n'.join(text))
 
 
 async def bot_echo_all(message: types.Message, state: FSMContext):
-    state_name = await state.get_state()
-    text = [
-        f'Эхо в состоянии {hcode(state_name)}',
-        'Содержание сообщения:',
-        hcode(message.text),
-        '\nЧтобы всё сбросить пишите /start'
-    ]
-    await message.answer('\n'.join(text))
+    await state.finish()
+    await message.answer(
+        'Сбросил незавершенный диалог. Попробуйте заново ввести команду'
+    )
 
 
 async def handle_other_callbacks(callback: CallbackQuery):
