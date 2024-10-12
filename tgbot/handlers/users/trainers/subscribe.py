@@ -11,6 +11,7 @@ from tgbot.keyboards.inline import (
 from tgbot.misc.states import RemoveTrainingSessionManualState
 from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
+from tgbot.utils.text import divide_sequence_to_parts
 
 
 async def set_point_manual_command(message: Message):
@@ -100,23 +101,15 @@ async def user_subscribers(message: Message):
             .where(TrainingSubscription.plan_id.in_(plan_ids))
         )
         result = (await session.execute(query)).scalars().all()
-    msg_parts = []
-    last_idx = len(result)
-    current_idx = 0
-    while current_idx < last_idx:
-        starts_with = ''
-        if not current_idx:
-            starts_with = 'Покупатели тарифов\n\n'
-        remainder = last_idx - current_idx
-        if remainder > 4:
-            end = 4
-        else:
-            end = remainder
-        txt_list = []
-        for idx in range(current_idx, current_idx + end):
-            txt_list.append(result[idx].display_text_buyer())
-        msg_parts.append(starts_with + '\n\n'.join(txt_list))
-        current_idx += end
+    if not result:
+        await message.answer('У вас нет подписчиков')
+        return
+    msg_parts: list[str] = []
+    for part in divide_sequence_to_parts(result, 4):
+        msg_parts.append('\n\n'.join((
+            obj.display_text_buyer() for obj in part
+        )))
+    msg_parts[0] = f'Покупатели тарифов({len(result)} шт.)\n\n' + msg_parts[0]
     for msg in msg_parts:
         await message.answer(msg)
 
