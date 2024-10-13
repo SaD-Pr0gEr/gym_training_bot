@@ -55,7 +55,7 @@ async def handle_other_callbacks(callback: CallbackQuery):
                             session, {'id': subscribe.id},
                             {
                                 'buy_date': datetime.now(),
-                                'balance': subscribe.balance
+                                'balance': plan.count
                             }
                         )
                 else:

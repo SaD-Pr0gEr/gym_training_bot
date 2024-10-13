@@ -6,28 +6,13 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from tgbot.constants.commands import TrainerButtonCommands
 from tgbot.keyboards.inline import (
-    make_inline_kb_plans, make_inline_kb_from_objects_list,
+    make_inline_kb_from_objects_list,
     make_inline_kb_user_from_subscribes
 )
 from tgbot.misc.states import RemoveTrainingSessionManualState
 from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
 from tgbot.utils.text import divide_sequence_to_parts
-
-
-# async def set_point_manual_command(message: Message):
-#     session_class: async_sessionmaker[AsyncSession] = message.bot['session']
-#     async with session_class() as session:
-#         user_plans = await TrainingPlan.select(
-#             session, {'trainer_id': message.from_user.id}
-#         )
-#     if not user_plans:
-#         await message.answer('У вас нет подходящих пакетов')
-#         return
-#     await RemoveTrainingSessionManualState.choose_plan.set()
-#     await message.answer(
-#         'Выберите пакет', reply_markup=make_inline_kb_plans(user_plans)
-#     )
 
 
 async def set_point_manual_command(message: Message):
@@ -91,35 +76,6 @@ async def choose_subscriber_callback(callback: CallbackQuery):
         callback.from_user.id,
         callback.message.message_id
     )
-
-
-# async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
-#     plan_id = int(callback.data)
-#     session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
-#     async with session_class() as session:
-#         plan_subs = await TrainingSubscription.select(
-#             session, {'plan_id': plan_id}
-#         )
-#     if not plan_subs:
-#         await state.finish()
-#         await callback.bot.send_message(
-#             callback.from_user.id,
-#             'У вас нет тренерующихся'
-#         )
-#         return
-#     await RemoveTrainingSessionManualState.choose_user.set()
-#     keyboard = make_inline_kb_from_objects_list(
-#         plan_subs, 'inline_btn_buyer_text', 'id'
-#     )
-#     await callback.bot.send_message(
-#         callback.from_user.id,
-#         'Выберите тренерующегося',
-#         reply_markup=keyboard
-#     )
-#     await callback.bot.delete_message(
-#         callback.from_user.id,
-#         callback.message.message_id
-#     )
 
 
 async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
