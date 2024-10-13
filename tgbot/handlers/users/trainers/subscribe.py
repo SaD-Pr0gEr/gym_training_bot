@@ -1,12 +1,13 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from tgbot.constants.commands import TrainerButtonCommands
 from tgbot.keyboards.inline import (
-    make_inline_kb_plans, make_inline_kb_from_objects_list
+    make_inline_kb_plans, make_inline_kb_from_objects_list,
+    make_inline_kb_user_from_subscribes
 )
 from tgbot.misc.states import RemoveTrainingSessionManualState
 from tgbot.models.subscribe import TrainingSubscription
@@ -14,42 +15,76 @@ from tgbot.models.training import TrainingPlan
 from tgbot.utils.text import divide_sequence_to_parts
 
 
+# async def set_point_manual_command(message: Message):
+#     session_class: async_sessionmaker[AsyncSession] = message.bot['session']
+#     async with session_class() as session:
+#         user_plans = await TrainingPlan.select(
+#             session, {'trainer_id': message.from_user.id}
+#         )
+#     if not user_plans:
+#         await message.answer('У вас нет подходящих пакетов')
+#         return
+#     await RemoveTrainingSessionManualState.choose_plan.set()
+#     await message.answer(
+#         'Выберите пакет', reply_markup=make_inline_kb_plans(user_plans)
+#     )
+
+
 async def set_point_manual_command(message: Message):
     session_class: async_sessionmaker[AsyncSession] = message.bot['session']
     async with session_class() as session:
-        user_plans = await TrainingPlan.select(
-            session, {'trainer_id': message.from_user.id}
+        plans_ids_query = (
+            select(TrainingPlan.id)
+            .where(TrainingPlan.trainer_id == message.from_user.id)
         )
-    if not user_plans:
-        await message.answer('У вас нет подходящих пакетов')
-        return
-    await RemoveTrainingSessionManualState.choose_plan.set()
+        plans_ids = (await session.execute(plans_ids_query)).scalars().all()
+        if not plans_ids:
+            await message.answer('У вас нет подходящих пакетов')
+            return
+        subscribers_query = (
+            select(TrainingSubscription)
+            .where(TrainingSubscription.plan_id.in_(plans_ids))
+            .distinct(TrainingSubscription.subscriber_id)
+        )
+        subscribers = (
+            await session.execute(subscribers_query)
+        ).scalars().all()
+        if not subscribers:
+            await message.answer(
+                'У вас нет тренерующихся'
+            )
+            return
+    await RemoveTrainingSessionManualState.choose_user.set()
     await message.answer(
-        'Выберите пакет', reply_markup=make_inline_kb_plans(user_plans)
+        'Выберите подписчика',
+        reply_markup=make_inline_kb_user_from_subscribes(subscribers)
     )
 
 
-async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
-    plan_id = int(callback.data)
+async def choose_subscriber_callback(callback: CallbackQuery):
+    subscriber_id = int(callback.data)
     session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
     async with session_class() as session:
-        plan_subs = await TrainingSubscription.select(
-            session, {'plan_id': plan_id}
+        plans_ids_query = (
+            select(TrainingPlan.id)
+            .where(TrainingPlan.trainer_id == callback.from_user.id)
         )
-    if not plan_subs:
-        await state.finish()
-        await callback.bot.send_message(
-            callback.from_user.id,
-            'У вас нет тренерующихся'
+        plans_ids = (await session.execute(plans_ids_query)).scalars().all()
+        plan_subs_query = (
+            select(TrainingSubscription)
+            .where(and_(
+                TrainingSubscription.plan_id.in_(plans_ids),
+                TrainingSubscription.subscriber_id == subscriber_id
+            ))
         )
-        return
-    await RemoveTrainingSessionManualState.choose_user.set()
+        plan_subs = (await session.execute(plan_subs_query)).scalars().all()
+    await RemoveTrainingSessionManualState.choose_plan.set()
     keyboard = make_inline_kb_from_objects_list(
-        plan_subs, 'inline_btn_buyer_text', 'id'
+        plan_subs, 'inline_btn_plan_balance_text', 'id'
     )
     await callback.bot.send_message(
         callback.from_user.id,
-        'Выберите тренерующегося',
+        'Выберите план',
         reply_markup=keyboard
     )
     await callback.bot.delete_message(
@@ -58,7 +93,36 @@ async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
     )
 
 
-async def choose_subs_callback(callback: CallbackQuery, state: FSMContext):
+# async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
+#     plan_id = int(callback.data)
+#     session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
+#     async with session_class() as session:
+#         plan_subs = await TrainingSubscription.select(
+#             session, {'plan_id': plan_id}
+#         )
+#     if not plan_subs:
+#         await state.finish()
+#         await callback.bot.send_message(
+#             callback.from_user.id,
+#             'У вас нет тренерующихся'
+#         )
+#         return
+#     await RemoveTrainingSessionManualState.choose_user.set()
+#     keyboard = make_inline_kb_from_objects_list(
+#         plan_subs, 'inline_btn_buyer_text', 'id'
+#     )
+#     await callback.bot.send_message(
+#         callback.from_user.id,
+#         'Выберите тренерующегося',
+#         reply_markup=keyboard
+#     )
+#     await callback.bot.delete_message(
+#         callback.from_user.id,
+#         callback.message.message_id
+#     )
+
+
+async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
     sub_id = int(callback.data)
     session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
     await state.finish()
@@ -121,12 +185,12 @@ def register_trainer_subscribe_handlers(dp: Dispatcher):
         is_trainer=True
     )
     dp.register_callback_query_handler(
-        choose_plan_callback,
-        state=RemoveTrainingSessionManualState.choose_plan
+        choose_subscriber_callback,
+        state=RemoveTrainingSessionManualState.choose_user
     )
     dp.register_callback_query_handler(
-        choose_subs_callback,
-        state=RemoveTrainingSessionManualState.choose_user
+        choose_plan_callback,
+        state=RemoveTrainingSessionManualState.choose_plan
     )
     dp.register_message_handler(
         user_subscribers,

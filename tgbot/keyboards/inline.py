@@ -1,9 +1,11 @@
 from enum import EnumType
+from typing import Iterable
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 import tgbot.buttons.inline as inline_btns
 from tgbot.misc.enum import two_enums_get_by_key
+from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
 
 USER_SETTINGS_INLINE_KEYBOARD = InlineKeyboardMarkup(inline_keyboard=[
@@ -40,4 +42,16 @@ def make_inline_kb_plans(plans: list[TrainingPlan]) -> InlineKeyboardMarkup:
     for plan in plans:
         txt = plan.inline_btn_text()
         keyboard.add(InlineKeyboardButton(txt, callback_data=str(plan.id)))
+    return keyboard
+
+
+def make_inline_kb_user_from_subscribes(
+    subs: Iterable[TrainingSubscription]
+) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup()
+    for sub in subs:
+        keyboard.add(InlineKeyboardButton(
+            f'{sub.subscriber.full_name}({sub.subscriber.phone_number})',
+            callback_data=str(sub.subscriber_id)
+        ))
     return keyboard

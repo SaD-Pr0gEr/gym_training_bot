@@ -62,10 +62,10 @@ class TrainingSubscription(Model, BaseModelMixin):
             f'{plan_type}({self.plan.trainer.full_name}) - {self.balance} шт.'
         )
 
-    def inline_btn_buyer_text(self) -> str:
+    def inline_btn_plan_balance_text(self) -> str:
         plan_type = getattr(TrainingTypesDisplay, self.plan.type.name).value
         return (
-            f'{plan_type}({self.subscriber.full_name}) - {self.balance} шт.'
+            f'{plan_type} - {self.balance} шт.'
         )
 
     @property
