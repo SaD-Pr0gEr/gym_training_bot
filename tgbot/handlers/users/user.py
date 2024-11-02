@@ -28,43 +28,10 @@ async def user_start(message: Message, state: FSMContext):
         )
     else:
         display = getattr(UserRolesDisplay, user.role.value)
-        split_text = message.text.split()
-        deep_link_exists = len(split_text) == 2
-        if deep_link_exists:
-            part_1, part_2 = split_text[-1].split('__')
-            if part_1 == 'train':
-                subs_id = int(part_2)
-                async with session_class() as session:
-                    subscribe: TrainingSubscription | None = (
-                        await TrainingSubscription.select(
-                            session, {'id': subs_id}, True
-                        )
-                    )
-                if not subscribe:
-                    await message.answer('Неправильная ссылка')
-                    return
-                if subscribe.plan.trainer_id != message.from_user.id:
-                    await message.answer('Вы не тренер!')
-                    return
-                async with session_class() as session:
-                    await TrainingSubscription.update(
-                        session, {'id': subs_id},
-                        {'balance': subscribe.balance - 1}
-                    )
-                    sub_session = TrainingSession(subs_id)
-                    session.add(sub_session)
-                    await session.commit()
-                await message.answer('Тренировка успешно списана')
-                await message.bot.send_message(
-                    subscribe.subscriber_id,
-                    'С вас успешно списана 1 тренировка. '
-                    'Можете посмотреть историю посещений'
-                )
-        else:
-            await message.answer(
-                f'Приветствую, {display.value}! Выбери команду',
-                reply_markup=define_user_keyboard(user)
-            )
+        await message.answer(
+            f'Приветствую, {display.value}! Выбери команду',
+            reply_markup=define_user_keyboard(user)
+        )
 
 
 async def get_user_number(message: Message, state: FSMContext):

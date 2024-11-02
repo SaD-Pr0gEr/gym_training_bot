@@ -7,15 +7,15 @@ class UserCommands(Enum):
 
 class UserButtonCommands(Enum):
     register = 'Зарегистрироваться 👤'
-    profile = 'Профиль 👤'
+    profile = 'Мой профиль'
     settings = 'Изменить профиль ⚙️'
 
 
 class TrainerButtonCommands(Enum):
-    add_plan = 'Добавить план тренировки 🤼'
-    plans_list = 'Мои планы тренировок 📋'
-    remove_training_manual = 'Вычитать тренировку вручную 🏋️‍♂️'
-    my_subscribers = 'Мои подписчики 👤'
+    add_plan = 'Добавить услугу'
+    plans_list = 'Мои услуги'
+    remove_training_manual = 'Списание тренировки вручную'
+    my_subscribers = 'Список клиентов'
 
 
 class TraineeButtonCommands(Enum):

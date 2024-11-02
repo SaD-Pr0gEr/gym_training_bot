@@ -1,19 +1,15 @@
-from io import BytesIO
-
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery
-from qrcode.image.pil import PilImage
-from qrcode.main import make as make_qr
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
+from tgbot.buttons.inline import make_yes_inline_btn, make_no_inline_btn
 from tgbot.constants.commands import TraineeButtonCommands
 from tgbot.keyboards.inline import make_inline_kb_from_objects_list
 from tgbot.misc.states import StartTrainState
 from tgbot.models.sessions import TrainingSession
 from tgbot.models.subscribe import TrainingSubscription
-from tgbot.utils.bot import make_start_training_deep_link
 
 
 async def start_training_command(message: Message):
@@ -37,19 +33,30 @@ async def start_training_command(message: Message):
 async def choose_training_callback(callback: CallbackQuery, state: FSMContext):
     await state.finish()
     sub_id = int(callback.data)
+    session = callback.bot['session']
+    async with session() as session:
+        subscription: TrainingSubscription = await TrainingSubscription.select(
+            session, {'id': sub_id}, True
+        )
     await callback.bot.delete_message(
         callback.from_user.id,
         callback.message.message_id
     )
-    buf = BytesIO()
-    qr: PilImage = make_qr(make_start_training_deep_link(
-        await callback.bot.get_me(), f'{sub_id}'
-    ))
-    qr.save(buf, format='PNG')
-    buf.seek(0)
-    await callback.bot.send_photo(
-        callback.from_user.id, buf,
-        caption='Тренер должен отсканировать этот QR'
+    callback_data = f'session__{subscription.id}'
+    await callback.bot.send_message(
+        subscription.plan.trainer_id,
+        f'Подтвердите списание 1 тренировки\n{subscription.inline_btn_text()}',
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+            [
+                make_yes_inline_btn(callback_data),
+                make_no_inline_btn(callback_data)
+            ]
+        ])
+    )
+    await callback.bot.send_message(
+        callback.from_user.id,
+        'Тренеру отправлено уведомление, как только он подтвердит, тренировка '
+        'будет списана'
     )
 
 

@@ -64,7 +64,7 @@ async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
         current_user: User = await User.select(
             session, {'tg_id': callback.from_user.id}, True
         )
-    callback_data = f'{plan_id}__{current_user.tg_id}__{plan.trainer_id}'
+    callback_data = f'plan_{plan_id}__{current_user.tg_id}__{plan.trainer_id}'
     await callback.bot.send_message(
         plan.trainer_id,
         f'К вашему курсу {plan.inline_btn_text()} '
