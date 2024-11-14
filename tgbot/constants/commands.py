@@ -3,6 +3,7 @@ from enum import Enum
 
 class UserCommands(Enum):
     start = 'Старт бота'
+    buy = 'Списать тренировку'
 
 
 class UserButtonCommands(Enum):
@@ -19,7 +20,7 @@ class TrainerButtonCommands(Enum):
 
 
 class TraineeButtonCommands(Enum):
-    buy_plan = 'Купить тренировку 💳'
+    buy_plan = 'Списать тренировку 💳'
     my_subscribes = 'Мои тренировки 🏋️‍♂️'
     start_training = 'Начать тренировку 🏋️‍♂️'
     history = 'История тренировок 📜'

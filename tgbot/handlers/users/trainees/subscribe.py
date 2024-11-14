@@ -1,10 +1,11 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from tgbot.buttons.inline import make_yes_inline_btn, make_no_inline_btn
-from tgbot.constants.commands import TraineeButtonCommands
+from tgbot.constants.commands import TraineeButtonCommands, UserCommands
 from tgbot.keyboards.inline import (
     make_inline_kb_from_objects_list,
     make_inline_kb_plans
@@ -93,9 +94,12 @@ async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
 async def subscribes_list_command(message: Message):
     session_class: async_sessionmaker[AsyncSession] = message.bot['session']
     async with session_class() as session:
-        user_subs = await TrainingSubscription.select(
-            session, {'subscriber_id': message.from_user.id}
-        )
+        user_subs = (
+            await session.execute(select(TrainingSubscription).where(and_(
+                TrainingSubscription.subscriber_id == message.from_user.id,
+                TrainingSubscription.balance > 0
+            )))
+        ).scalars().all()
     await message.answer(
         'Ваши тренировки:\n\n' +
         '\n\n'.join(map(lambda obj: obj.display_text(), user_subs)),
@@ -106,6 +110,9 @@ def register_subscribes_handlers(dp: Dispatcher):
     dp.register_message_handler(
         subscribe_to_plan_command, text=TraineeButtonCommands.buy_plan.value,
         is_trainee=True
+    )
+    dp.register_message_handler(
+        subscribe_to_plan_command, commands=[UserCommands.buy.name],
     )
     dp.register_callback_query_handler(
         choose_trainer_callback, state=SubscribeUserState.choose_trainer
