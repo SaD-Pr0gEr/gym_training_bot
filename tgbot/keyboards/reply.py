@@ -8,7 +8,8 @@ USER_REGISTER_KEYBOARD = ReplyKeyboardMarkup([[
 TRAINER_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
     [r_btn.ADD_PLAN_BUTTON, r_btn.PLANS_LIST_BUTTON],
     [r_btn.USER_PROFILE_BUTTON, r_btn.USER_SETTINGS_BUTTON],
-    [r_btn.REMOVE_PLAN_BUTTON, r_btn.MY_SUBSCRIBERS_BUTTON]
+    [r_btn.REMOVE_PLAN_BUTTON, r_btn.MY_SUBSCRIBERS_BUTTON],
+    [r_btn.ADD_SESSION_COUNT]
 ], resize_keyboard=True)
 
 TRAINEE_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([

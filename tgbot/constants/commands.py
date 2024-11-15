@@ -17,6 +17,7 @@ class TrainerButtonCommands(Enum):
     plans_list = 'Мои услуги'
     remove_training_manual = 'Списание тренировки вручную'
     my_subscribers = 'Список клиентов'
+    add_training_count = 'Зачислить тренировку подписчику'
 
 
 class TraineeButtonCommands(Enum):

@@ -30,3 +30,9 @@ class StartTrainState(StatesGroup):
 class RemoveTrainingSessionManualState(StatesGroup):
     choose_plan = State()
     choose_user = State()
+
+
+class AddTrainingSessionCountState(StatesGroup):
+    choose_user = State()
+    choose_plan = State()
+    add_count = State()

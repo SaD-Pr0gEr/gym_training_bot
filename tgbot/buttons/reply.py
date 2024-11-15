@@ -22,3 +22,6 @@ START_TRAINING_BUTTON = KeyboardButton(
     TraineeButtonCommands.start_training.value
 )
 HISTORY_COMMAND = KeyboardButton(TraineeButtonCommands.history.value)
+ADD_SESSION_COUNT = KeyboardButton(
+    TrainerButtonCommands.add_training_count.value
+)
