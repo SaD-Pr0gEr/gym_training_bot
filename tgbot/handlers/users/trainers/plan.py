@@ -32,6 +32,15 @@ async def add_plan_count(callback: CallbackQuery, state: FSMContext):
         await state.finish()
         session_class = callback.bot['session']
         async with session_class() as session:
+            plans = await TrainingPlan.select(
+                session, {'count': 1, 'type': type_}
+            )
+            if plans:
+                await callback.bot.send_message(
+                    callback.from_user.id,
+                    'У вас уже есть такой план'
+                )
+                return
             session.add(TrainingPlan(
                 1, TrainingTypes(type_.value), callback.from_user.id
             ))
@@ -62,6 +71,14 @@ async def get_training_count(message: Message, state: FSMContext):
     await state.finish()
     session_class = message.bot['session']
     async with session_class() as session:
+        plans = await TrainingPlan.select(
+            session, {'count': int(message.text), 'type': type_}
+        )
+        if plans:
+            await message.answer(
+                'У вас уже есть такой план'
+            )
+            return
         session.add(TrainingPlan(
             int(message.text), type_, message.from_user.id
         ))
