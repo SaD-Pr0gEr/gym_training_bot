@@ -27,9 +27,9 @@ async def bot_echo_all(message: types.Message, state: FSMContext):
 
 async def handle_other_callbacks(callback: CallbackQuery):
     session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
-    if callback.data.startswith('plan_'):
+    if 'plan_' in callback.data:
         status, plan_id, buyer_id, trainer_id = (
-            callback.data.split('plan_')[-1].split('__')
+            callback.data.replace('plan_', '').split('__')
         )
         plan_id, buyer_id, trainer_id = (
             int(plan_id), int(buyer_id), int(trainer_id)

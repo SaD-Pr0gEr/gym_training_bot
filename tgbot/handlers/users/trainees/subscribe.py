@@ -100,10 +100,13 @@ async def subscribes_list_command(message: Message):
                 TrainingSubscription.balance > 0
             )))
         ).scalars().all()
-    await message.answer(
-        'Ваши тренировки:\n\n' +
-        '\n\n'.join(map(lambda obj: obj.display_text(), user_subs)),
-    )
+    if not user_subs:
+        await message.answer('У вас нет купленных тренировок')
+    else:
+        await message.answer(
+            'Ваши тренировки:\n\n' +
+            '\n\n'.join(map(lambda obj: obj.display_text(), user_subs)),
+        )
 
 
 def register_subscribes_handlers(dp: Dispatcher):

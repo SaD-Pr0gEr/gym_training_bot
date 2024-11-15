@@ -40,15 +40,15 @@ async def add_plan_count(callback: CallbackQuery, state: FSMContext):
                     callback.from_user.id,
                     'У вас уже есть такой план'
                 )
-                return
-            session.add(TrainingPlan(
-                1, TrainingTypes(type_.value), callback.from_user.id
-            ))
-            await session.commit()
-        await callback.bot.send_message(
-            callback.from_user.id,
-            'Успешно добавил план тренировки'
-        )
+            else:
+                session.add(TrainingPlan(
+                    1, TrainingTypes(type_.value), callback.from_user.id
+                ))
+                await session.commit()
+                await callback.bot.send_message(
+                    callback.from_user.id,
+                    'Успешно добавил план тренировки'
+                )
     else:
         await state.update_data(type=callback.data)
         await AddTrainingPlanState.count.set()
@@ -78,14 +78,14 @@ async def get_training_count(message: Message, state: FSMContext):
             await message.answer(
                 'У вас уже есть такой план'
             )
-            return
-        session.add(TrainingPlan(
-            int(message.text), type_, message.from_user.id
-        ))
-        await session.commit()
-    await message.answer(
-        'Успешно добавил план тренировки'
-    )
+        else:
+            session.add(TrainingPlan(
+                int(message.text), type_, message.from_user.id
+            ))
+            await session.commit()
+            await message.answer(
+                'Успешно добавил план тренировки'
+            )
 
 
 async def training_list_command(message: Message):

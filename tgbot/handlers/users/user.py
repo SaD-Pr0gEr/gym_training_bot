@@ -7,8 +7,6 @@ from tgbot.constants.commands import UserCommands
 from tgbot.keyboards.inline import two_enums_value_inline_keyboard
 from tgbot.keyboards.reply import USER_REGISTER_KEYBOARD
 from tgbot.misc.states import UserRegisterState
-from tgbot.models.sessions import TrainingSession
-from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.user import User, UserRoles, UserRolesDisplay
 from tgbot.utils.user import define_user_keyboard
 
