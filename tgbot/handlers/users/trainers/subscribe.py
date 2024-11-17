@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import (
     Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 )
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from tgbot.constants.commands import TrainerButtonCommands
@@ -151,7 +151,8 @@ async def show_user_subs(callback: CallbackQuery, state: FSMContext):
             select(TrainingSubscription)
             .where(and_(
                 TrainingSubscription.plan_id.in_(plan_ids),
-                TrainingSubscription.subscriber_id == sub_user_id
+                TrainingSubscription.subscriber_id == sub_user_id,
+                TrainingSubscription.balance > 0
             ))
         )
         result = (await session.execute(query)).scalars().all()
@@ -199,11 +200,19 @@ async def choose_user_callback(callback: CallbackQuery):
     user_id = int(callback.data)
     session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
     async with session_class() as session:
-        subscriptions: list[TrainingSubscription] = (
-            await TrainingSubscription.select(
-                session, {'subscriber_id': user_id}
+        user_plans_ids = (await session.execute(
+            select(TrainingPlan.id)
+            .where(
+                TrainingPlan.trainer_id == callback.from_user.id
             )
-        )
+        )).scalars().all()
+        subscriptions = (await session.execute(
+            select(TrainingSubscription)
+            .where(and_(
+                TrainingSubscription.plan_id.in_(user_plans_ids),
+                TrainingSubscription.subscriber_id == user_id
+            ))
+        )).scalars().all()
     await AddTrainingSessionCountState.choose_plan.set()
     keyboard = InlineKeyboardMarkup()
     for sub in subscriptions:
