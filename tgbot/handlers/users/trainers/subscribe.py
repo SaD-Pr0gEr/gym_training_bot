@@ -13,11 +13,10 @@ from tgbot.keyboards.inline import (
 )
 from tgbot.misc.states import (
     RemoveTrainingSessionManualState,
-    AddTrainingSessionCountState
+    AddTrainingSessionCountState, ShowTrainerSubsState
 )
 from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
-from tgbot.utils.text import divide_sequence_to_parts
 
 
 async def remove_count_manual_command(message: Message):
@@ -124,19 +123,48 @@ async def user_subscribers(message: Message):
         query = (
             select(TrainingSubscription)
             .where(TrainingSubscription.plan_id.in_(plan_ids))
+            .distinct(TrainingSubscription.subscriber_id)
         )
         result = (await session.execute(query)).scalars().all()
     if not result:
         await message.answer('У вас нет подписчиков')
         return
-    msg_parts: list[str] = []
-    for part in divide_sequence_to_parts(result, 4):
-        msg_parts.append('\n\n'.join((
-            obj.display_text_buyer() for obj in part
-        )))
-    msg_parts[0] = f'Покупатели тарифов({len(result)} шт.)\n\n' + msg_parts[0]
-    for msg in msg_parts:
-        await message.answer(msg)
+    await ShowTrainerSubsState.choose_user.set()
+    keyboard = InlineKeyboardMarkup()
+    for sub in result:
+        keyboard.add(InlineKeyboardButton(
+            sub.subscriber.full_name, callback_data=str(sub.subscriber_id)
+        ))
+    await message.answer('Выберите подписчика', reply_markup=keyboard)
+
+
+async def show_user_subs(callback: CallbackQuery, state: FSMContext):
+    sub_user_id = int(callback.data)
+    session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
+    async with session_class() as session:
+        query_plan = (
+            select(TrainingPlan.id)
+            .where(TrainingPlan.trainer_id == callback.from_user.id)
+        )
+        plan_ids = (await session.execute(query_plan)).scalars().all()
+        query = (
+            select(TrainingSubscription)
+            .where(and_(
+                TrainingSubscription.plan_id.in_(plan_ids),
+                TrainingSubscription.subscriber_id == sub_user_id
+            ))
+        )
+        result = (await session.execute(query)).scalars().all()
+    await state.finish()
+    text = '\n\n'.join(map(lambda obj: obj.display_text_buyer(), result))
+    await callback.bot.delete_message(
+        callback.from_user.id,
+        callback.message.message_id
+    )
+    await callback.bot.send_message(
+        callback.from_user.id,
+        text,
+    )
 
 
 async def add_count_manual_command(message: Message):
@@ -240,6 +268,9 @@ def register_trainer_subscribe_handlers(dp: Dispatcher):
     dp.register_message_handler(
         user_subscribers,
         text=TrainerButtonCommands.my_subscribers.value, is_trainer=True
+    )
+    dp.register_callback_query_handler(
+        show_user_subs, state=ShowTrainerSubsState.choose_user
     )
     dp.register_message_handler(
         add_count_manual_command,

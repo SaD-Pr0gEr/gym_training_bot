@@ -36,3 +36,7 @@ class AddTrainingSessionCountState(StatesGroup):
     choose_user = State()
     choose_plan = State()
     add_count = State()
+
+
+class ShowTrainerSubsState(StatesGroup):
+    choose_user = State()
