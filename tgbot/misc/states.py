@@ -19,6 +19,7 @@ class UserSettingsSetState(StatesGroup):
 
 
 class SubscribeUserState(StatesGroup):
+    search_trainer = State()
     choose_trainer = State()
     choose_plan = State()
 

@@ -1,14 +1,17 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup
+from aiogram.types import (
+    Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+)
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from tgbot.buttons.inline import make_yes_inline_btn, make_no_inline_btn
+from tgbot.buttons.inline import (
+    make_yes_inline_btn, make_no_inline_btn, make_search_inline_btn
+)
 from tgbot.constants.commands import TraineeButtonCommands, UserCommands
 from tgbot.keyboards.inline import (
-    make_inline_kb_from_objects_list,
-    make_inline_kb_plans
+    make_inline_kb_plans, make_inline_kb_from_objects_list
 )
 from tgbot.misc.states import SubscribeUserState
 from tgbot.models.subscribe import TrainingSubscription
@@ -23,36 +26,90 @@ async def subscribe_to_plan_command(message: Message):
     if not trainers:
         await message.answer('Подходящих тренеров нет')
         return
-    await SubscribeUserState.choose_trainer.set()
-    keyboard = make_inline_kb_from_objects_list(
-        trainers, 'full_name', 'tg_id'
+    await SubscribeUserState.search_trainer.set()
+    async with session_class() as session:
+        user_plans_ids = (
+            await session.execute(
+                select(TrainingSubscription.plan_id)
+                .where(
+                    TrainingSubscription.subscriber_id == message.from_user.id
+                )
+                .distinct(TrainingSubscription.plan_id)
+            )
+        ).scalars().all()
+        user_trainers = (
+            await session.execute(
+                select(TrainingPlan)
+                .where(TrainingPlan.id.in_(user_plans_ids))
+                .distinct(TrainingPlan.trainer_id)
+            )
+        ).scalars().all()
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(make_search_inline_btn('trainer'))
+    for plan in user_trainers:
+        keyboard.add(InlineKeyboardButton(
+            plan.trainer.full_name,
+            callback_data=f'{plan.trainer_id}'
+        ))
+    await message.answer(
+        'Отлично! Выберите 1го из своих тренеров или поищите другого',
+        reply_markup=keyboard
     )
-    await message.answer('Отлично! Выберите тренера', reply_markup=keyboard)
 
 
 async def choose_trainer_callback(callback: CallbackQuery, state: FSMContext):
-    trainer_id = int(callback.data)
     await callback.bot.delete_message(
         callback.from_user.id,
         callback.message.message_id
     )
-    session_class: async_sessionmaker[AsyncSession] = callback.bot['session']
-    async with session_class() as session:
-        plans = await TrainingPlan.select(session, {'trainer_id': trainer_id})
-    if not plans:
+    if callback.data == 'search__trainer':
+        await SubscribeUserState.choose_trainer.set()
         await callback.bot.send_message(
             callback.from_user.id,
-            'У этого тренера нет подходящих тарифов'
+            'Отлично! Напишите имя тренера для поиска'
+        )
+    else:
+        trainer_id = int(callback.data)
+        session_class: async_sessionmaker[AsyncSession] = (
+            callback.bot['session']
+        )
+        async with session_class() as session:
+            plans = await TrainingPlan.select(
+                session, {'trainer_id': trainer_id}
+            )
+        if not plans:
+            await callback.bot.send_message(
+                callback.from_user.id,
+                'У этого тренера нет подходящих тарифов'
+            )
+            await state.finish()
+            return
+        await SubscribeUserState.choose_plan.set()
+        keyboard = make_inline_kb_plans(plans)
+        await callback.bot.send_message(
+            callback.from_user.id,
+            'Отлично! Выберите план',
+            reply_markup=keyboard
+        )
+
+
+async def search_trainer(message: Message, state: FSMContext):
+    session_class: async_sessionmaker[AsyncSession] = message.bot['session']
+    async with session_class() as session:
+        trainers = (await session.execute(
+            select(User)
+            .where(User.full_name.icontains(message.text))
+        )).scalars().all()
+    if not trainers:
+        await message.answer(
+            'Тренеров по запросу нет, команда завершена. Попробуйте заново'
         )
         await state.finish()
         return
-    await SubscribeUserState.choose_plan.set()
-    keyboard = make_inline_kb_plans(plans)
-    await callback.bot.send_message(
-        callback.from_user.id,
-        'Отлично! Выберите план',
-        reply_markup=keyboard
-    )
+    await SubscribeUserState.search_trainer.set()
+    keyboard = make_inline_kb_from_objects_list(trainers, 'full_name', 'tg_id')
+    keyboard.add(make_search_inline_btn('trainer'))
+    await message.answer('Результаты поиска', reply_markup=keyboard)
 
 
 async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
@@ -118,7 +175,10 @@ def register_subscribes_handlers(dp: Dispatcher):
         subscribe_to_plan_command, commands=[UserCommands.buy.name],
     )
     dp.register_callback_query_handler(
-        choose_trainer_callback, state=SubscribeUserState.choose_trainer
+        choose_trainer_callback, state=SubscribeUserState.search_trainer
+    )
+    dp.register_message_handler(
+        search_trainer, state=SubscribeUserState.choose_trainer
     )
     dp.register_callback_query_handler(
         choose_plan_callback, state=SubscribeUserState.choose_plan

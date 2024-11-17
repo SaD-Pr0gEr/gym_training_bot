@@ -20,3 +20,9 @@ def make_yes_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
 
 def make_no_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
     return InlineKeyboardButton('Нет ❌', callback_data=f'no__{callback_data}')
+
+
+def make_search_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        'Поиск 🔍', callback_data=f'search__{callback_data}'
+    )
