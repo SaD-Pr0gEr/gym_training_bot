@@ -67,14 +67,18 @@ async def handle_other_callbacks(callback: CallbackQuery):
                     )
                     session.add(subscribe)
                 await session.commit()
+                subscribe = await TrainingSubscription.select(
+                    session, {'subscriber_id': buyer_id, 'plan_id': plan_id},
+                    True
+                )
             await callback.bot.send_message(
                 callback.from_user.id,
-                'Успешно активировал пакет'
+                f'Успешно активировал пакет\n{subscribe.display_text_buyer()}'
             )
             await callback.bot.send_message(
                 buyer_id,
-                'Тренер подтвердил покупку пакета тренировок! '
-                'Можете посмотреть в списке покупок'
+                f'Тренер подтвердил покупку пакета тренировок!\n'
+                f'{subscribe.display_text()}'
             )
         else:
             await callback.bot.send_message(

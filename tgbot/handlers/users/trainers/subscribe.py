@@ -1,7 +1,8 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, \
-    InlineKeyboardButton
+from aiogram.types import (
+    Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+)
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
@@ -10,8 +11,10 @@ from tgbot.keyboards.inline import (
     make_inline_kb_from_objects_list,
     make_inline_kb_user_from_subscribes
 )
-from tgbot.misc.states import RemoveTrainingSessionManualState, \
+from tgbot.misc.states import (
+    RemoveTrainingSessionManualState,
     AddTrainingSessionCountState
+)
 from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
 from tgbot.utils.text import divide_sequence_to_parts
