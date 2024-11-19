@@ -6,7 +6,7 @@ from aiogram.types import (
 from sqlalchemy import select, and_, Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from tgbot.constants.commands import TrainerButtonCommands
+from tgbot.constants.commands import TrainerButtonCommands, UserCommands
 from tgbot.keyboards.inline import (
     make_inline_kb_from_objects_list,
     make_inline_kb_user_from_subscribes
@@ -38,11 +38,11 @@ async def remove_count_manual_command(message: Message):
         subscribers = (
             await session.execute(subscribers_query)
         ).scalars().all()
-        if not subscribers:
-            await message.answer(
-                'У вас нет тренерующихся'
-            )
-            return
+    if not subscribers:
+        await message.answer(
+            'У вас нет тренерующихся'
+        )
+        return
     await RemoveTrainingSessionManualState.choose_user.set()
     await message.answer(
         'Выберите подписчика',
@@ -265,6 +265,10 @@ def register_trainer_subscribe_handlers(dp: Dispatcher):
         remove_count_manual_command,
         text=TrainerButtonCommands.remove_training_manual.value,
         is_trainer=True
+    )
+    dp.register_message_handler(
+        remove_count_manual_command,
+        commands=[UserCommands.remove.name]
     )
     dp.register_callback_query_handler(
         choose_subscriber_callback,

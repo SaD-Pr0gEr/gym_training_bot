@@ -171,9 +171,6 @@ def register_subscribes_handlers(dp: Dispatcher):
         subscribe_to_plan_command, text=TraineeButtonCommands.buy_plan.value,
         is_trainee=True
     )
-    dp.register_message_handler(
-        subscribe_to_plan_command, commands=[UserCommands.buy.name],
-    )
     dp.register_callback_query_handler(
         choose_trainer_callback, state=SubscribeUserState.search_trainer
     )

@@ -3,7 +3,7 @@ from enum import Enum
 
 class UserCommands(Enum):
     start = 'Меню'
-    buy = 'Купить тренировку'
+    remove = 'Списать тренировку'
 
 
 class UserButtonCommands(Enum):
