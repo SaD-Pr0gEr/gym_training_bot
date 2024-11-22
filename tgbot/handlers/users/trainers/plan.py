@@ -6,6 +6,7 @@ from aiogram.types import Message, CallbackQuery
 
 from tgbot.constants.commands import TrainerButtonCommands
 from tgbot.keyboards.inline import two_enums_value_inline_keyboard
+from tgbot.keyboards.reply import TRAINER_SERVICES_KEYBOARD
 from tgbot.misc.states import AddTrainingPlanState
 from tgbot.models.training import (
     TrainingTypes, TrainingTypesDisplay, TrainingPlan
@@ -107,7 +108,7 @@ async def training_list_command(message: Message):
         await message.answer('У вас нет тренировочных планов')
         return
     txt = '\n\n'.join(map(lambda obj: obj.display_text(), plans))
-    await message.answer(txt)
+    await message.answer(txt, reply_markup=TRAINER_SERVICES_KEYBOARD)
 
 
 def register_trainer_plans_handlers(dp: Dispatcher):
