@@ -1,3 +1,5 @@
+from typing import Any
+
 from aiogram.types import InlineKeyboardButton
 
 FULL_NAME_CHANGE_BTN = InlineKeyboardButton('Ф.И.О', callback_data='full_name')
@@ -18,6 +20,12 @@ def make_yes_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
     return InlineKeyboardButton('Да ✅', callback_data=f'yes__{callback_data}')
 
 
+def make_cancel_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        'Отменить ❌', callback_data=f'cancel__{callback_data}'
+    )
+
+
 def make_no_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
     return InlineKeyboardButton('Нет ❌', callback_data=f'no__{callback_data}')
 
@@ -25,4 +33,11 @@ def make_no_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
 def make_search_inline_btn(callback_data: str = '') -> InlineKeyboardButton:
     return InlineKeyboardButton(
         'Поиск 🔍', callback_data=f'search__{callback_data}'
+    )
+
+def make_prev_month_inline_btn(
+        callback_data: Any = ''
+) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        '<< Предыдущий месяц', callback_data=f'prev_month__{callback_data}'
     )

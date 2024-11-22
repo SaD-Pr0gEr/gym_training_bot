@@ -44,10 +44,4 @@ class TrainingSession(Model, BaseModelMixin):
         return result.scalars().all()
 
     def display_text(self) -> str:
-        type_text = getattr(
-            TrainingTypesDisplay, self.subscription.plan.type.name
-        ).value
-        return (
-            f'{type_text}({self.subscription.plan.trainer.full_name})\n'
-            f'Дата посещения: {self.visit_date.strftime("%d.%m.%Y %H:%M")}'
-        )
+        return f'Дата посещения: {self.visit_date.strftime("%d.%m.%Y")}'

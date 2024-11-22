@@ -41,3 +41,7 @@ class AddTrainingSessionCountState(StatesGroup):
 
 class ShowTrainerSubsState(StatesGroup):
     choose_user = State()
+
+
+class TraineeSessionsState(StatesGroup):
+    choose_month = State()

@@ -15,6 +15,7 @@ from tgbot.misc.states import (
     RemoveTrainingSessionManualState,
     AddTrainingSessionCountState, ShowTrainerSubsState
 )
+from tgbot.models.sessions import TrainingSession
 from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
 
@@ -94,6 +95,8 @@ async def choose_plan_callback(callback: CallbackQuery, state: FSMContext):
             await TrainingSubscription.update(
                 session, {'id': sub_id}, {'balance': subs.balance - 1}
             )
+            t_session = TrainingSession(subs.id)
+            session.add(t_session)
             await session.commit()
             await session.refresh(subs)
     await callback.bot.send_message(
