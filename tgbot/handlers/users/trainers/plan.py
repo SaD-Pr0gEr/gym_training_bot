@@ -105,7 +105,10 @@ async def training_list_command(message: Message):
             session, {'trainer_id': message.from_user.id}
         )
     if not plans:
-        await message.answer('У вас нет тренировочных планов')
+        await message.answer(
+            'У вас нет тренировочных планов',
+            reply_markup=TRAINER_SERVICES_KEYBOARD
+        )
         return
     txt = '\n\n'.join(map(lambda obj: obj.display_text(), plans))
     await message.answer(txt, reply_markup=TRAINER_SERVICES_KEYBOARD)
