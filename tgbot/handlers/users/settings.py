@@ -80,14 +80,33 @@ async def set_full_name(message: Message, state: FSMContext):
             {field_name: message.text}
         )
         await session.commit()
+        user = await User.select(
+            session, {'tg_id': message.from_user.id}, True
+        )
     await message.answer(
-        'Успешно обновил профиль'
+        'Успешно обновил профиль',
+        reply_markup=define_user_keyboard(user)
+    )
+
+
+async def main_menu_command(message: Message):
+    session_class: async_sessionmaker[AsyncSession] = message.bot['session']
+    async with session_class() as session:
+        user = await User.select(
+            session, {'tg_id': message.from_user.id}, True
+        )
+    await message.answer(
+        'Отлично! Выберите команду', reply_markup=define_user_keyboard(user)
     )
 
 
 def register_settings_handlers(dp: Dispatcher):
     dp.register_message_handler(
         profile_settings_command, text=UserButtonCommands.settings.value,
+        logged_user=True
+    )
+    dp.register_message_handler(
+        main_menu_command, text=UserButtonCommands.menu.value,
         logged_user=True
     )
     dp.register_callback_query_handler(

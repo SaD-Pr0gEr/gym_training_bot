@@ -16,6 +16,7 @@ MY_SUBSCRIBERS_BUTTON = KeyboardButton(
 )
 USER_PROFILE_BUTTON = KeyboardButton(UserButtonCommands.profile.value)
 USER_SETTINGS_BUTTON = KeyboardButton(UserButtonCommands.settings.value)
+MAIN_MENU_BUTTON = KeyboardButton(UserButtonCommands.menu.value)
 BUY_PLAN_BUTTON = KeyboardButton(TraineeButtonCommands.buy_plan.value)
 MY_SUBS_BUTTON = KeyboardButton(TraineeButtonCommands.my_subscribes.value)
 START_TRAINING_BUTTON = KeyboardButton(

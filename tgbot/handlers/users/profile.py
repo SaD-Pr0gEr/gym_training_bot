@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 from aiogram.types import Message
 
 from tgbot.constants.commands import UserButtonCommands
+from tgbot.keyboards.reply import USER_SETTINGS_KEYBOARD
 from tgbot.models.user import User
 
 
@@ -11,7 +12,9 @@ async def my_profile_command(message: Message):
         user: User = await User.select(
             session, {'tg_id': message.from_user.id}, True
         )
-    await message.answer(user.display_text())
+    await message.answer(
+        user.display_text(), reply_markup=USER_SETTINGS_KEYBOARD
+    )
 
 
 def register_profile_handlers(dp: Dispatcher):
