@@ -12,11 +12,14 @@ TRAINER_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
 ], resize_keyboard=True)
 
 TRAINEE_COMMANDS_KEYBOARD = ReplyKeyboardMarkup([
-    [r_btn.USER_PROFILE_BUTTON, r_btn.HISTORY_COMMAND],
+    [r_btn.USER_PROFILE_BUTTON, r_btn.START_TRAINING_BUTTON],
     [r_btn.BUY_PLAN_BUTTON, r_btn.MY_SUBS_BUTTON],
-    [r_btn.START_TRAINING_BUTTON]
 ], resize_keyboard=True)
 
 USER_SETTINGS_KEYBOARD = ReplyKeyboardMarkup([
     [r_btn.USER_SETTINGS_BUTTON, r_btn.MAIN_MENU_BUTTON],
+], resize_keyboard=True)
+
+USER_SUBS_KEYBOARD = ReplyKeyboardMarkup([
+    [r_btn.HISTORY_COMMAND, r_btn.MAIN_MENU_BUTTON],
 ], resize_keyboard=True)

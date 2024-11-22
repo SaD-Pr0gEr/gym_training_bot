@@ -13,6 +13,7 @@ from tgbot.constants.commands import TraineeButtonCommands, UserCommands
 from tgbot.keyboards.inline import (
     make_inline_kb_plans, make_inline_kb_from_objects_list
 )
+from tgbot.keyboards.reply import USER_SUBS_KEYBOARD
 from tgbot.misc.states import SubscribeUserState
 from tgbot.models.subscribe import TrainingSubscription
 from tgbot.models.training import TrainingPlan
@@ -163,6 +164,7 @@ async def subscribes_list_command(message: Message):
         await message.answer(
             'Ваши тренировки:\n\n' +
             '\n\n'.join(map(lambda obj: obj.display_text(), user_subs)),
+            reply_markup=USER_SUBS_KEYBOARD
         )
 
 
