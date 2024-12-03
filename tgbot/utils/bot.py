@@ -1,12 +1,14 @@
+from enum import EnumType
+
 from aiogram import Bot
 from aiogram.types import BotCommand, User
 
 from tgbot.constants.commands import UserCommands
 
 
-def get_bot_commands() -> list[BotCommand]:
+def get_bot_commands(commands: EnumType = UserCommands) -> list[BotCommand]:
     bot_commands: list[BotCommand] = []
-    for command, description in UserCommands.__members__.items():
+    for command, description in commands.__members__.items():
         bot_commands.append(
             BotCommand(command, description.value)
         )

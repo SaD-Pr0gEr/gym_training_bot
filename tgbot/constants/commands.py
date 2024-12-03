@@ -3,7 +3,16 @@ from enum import Enum
 
 class UserCommands(Enum):
     start = 'Меню'
+
+
+class TrainerCommands(Enum):
+    start = 'Меню'
     remove = 'Списать тренировку'
+
+
+class TraineeCommands(Enum):
+    start = 'Меню'
+    train = 'Начать тренировку'
 
 
 class UserButtonCommands(Enum):

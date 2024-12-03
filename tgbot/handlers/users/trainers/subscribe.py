@@ -6,7 +6,8 @@ from aiogram.types import (
 from sqlalchemy import select, and_, Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from tgbot.constants.commands import TrainerButtonCommands, UserCommands
+from tgbot.constants.commands import TrainerButtonCommands, UserCommands, \
+    TrainerCommands
 from tgbot.keyboards.inline import (
     make_inline_kb_from_objects_list,
     make_inline_kb_user_from_subscribes
@@ -271,7 +272,7 @@ def register_trainer_subscribe_handlers(dp: Dispatcher):
     )
     dp.register_message_handler(
         remove_count_manual_command,
-        commands=[UserCommands.remove.name]
+        commands=[TrainerCommands.remove.name]
     )
     dp.register_callback_query_handler(
         choose_subscriber_callback,

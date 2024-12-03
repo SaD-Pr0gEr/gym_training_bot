@@ -11,7 +11,7 @@ from tgbot.buttons.inline import (
     make_yes_inline_btn, make_no_inline_btn, make_prev_month_inline_btn,
     make_cancel_inline_btn
 )
-from tgbot.constants.commands import TraineeButtonCommands
+from tgbot.constants.commands import TraineeButtonCommands, TraineeCommands
 from tgbot.keyboards.inline import make_inline_kb_from_objects_list
 from tgbot.misc.states import StartTrainState, TraineeSessionsState
 from tgbot.models.sessions import TrainingSession
@@ -225,6 +225,10 @@ def register_sessions_handlers(dp: Dispatcher):
     dp.register_message_handler(
         start_training_command,
         text=TraineeButtonCommands.start_training.value, is_trainee=True
+    )
+    dp.register_message_handler(
+        start_training_command,
+        commands=[TraineeCommands.train.name]
     )
     dp.register_callback_query_handler(
         choose_training_callback, state=StartTrainState.choose_plan

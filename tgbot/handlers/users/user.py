@@ -8,7 +8,7 @@ from tgbot.keyboards.inline import two_enums_value_inline_keyboard
 from tgbot.keyboards.reply import USER_REGISTER_KEYBOARD
 from tgbot.misc.states import UserRegisterState
 from tgbot.models.user import User, UserRoles, UserRolesDisplay
-from tgbot.utils.user import define_user_keyboard
+from tgbot.utils.user import define_user_keyboard, define_user_commands
 
 
 async def user_start(message: Message, state: FSMContext):
@@ -26,6 +26,7 @@ async def user_start(message: Message, state: FSMContext):
         )
     else:
         display = getattr(UserRolesDisplay, user.role.value)
+        await define_user_commands(user, message.bot)
         await message.answer(
             f'Приветствую, {display.value}! Выбери команду',
             reply_markup=define_user_keyboard(user)

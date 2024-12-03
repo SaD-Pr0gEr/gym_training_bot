@@ -9,7 +9,7 @@ from tgbot.keyboards.inline import (
 )
 from tgbot.misc.states import UserSettingsSetState
 from tgbot.models.user import UserRoles, UserRolesDisplay, User
-from tgbot.utils.user import define_user_keyboard
+from tgbot.utils.user import define_user_keyboard, define_user_commands
 
 
 async def profile_settings_command(message: Message):
@@ -67,6 +67,7 @@ async def set_role_callback(callback: CallbackQuery, state: FSMContext):
         'Успешно обновил профиль',
         reply_markup=define_user_keyboard(user)
     )
+    await define_user_commands(user, callback.bot)
 
 
 async def set_full_name(message: Message, state: FSMContext):
