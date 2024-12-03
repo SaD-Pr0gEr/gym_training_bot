@@ -105,10 +105,18 @@ async def sessions_list(message: Message):
                 TrainingSession.subscription_id.in_(subs_ids)
             ))
         )).scalars().first()
-    if not this_month_history:
-        await message.answer('Вы не посещали тренировки на этом месяце')
-        return
+    keyboard = InlineKeyboardMarkup()
+    if prev_month_exists_history:
+        keyboard.add(make_prev_month_inline_btn(
+            f'{prev_month.year}__{prev_month.month}'
+        ))
+    keyboard.add(make_cancel_inline_btn())
     await TraineeSessionsState.choose_month.set()
+    if not this_month_history:
+        await message.answer(
+            'Вы не посещали тренировки на этом месяце', reply_markup=keyboard
+        )
+        return
     group_history: dict[int, list[TrainingSession]] = {}
     for history in this_month_history:
         if history.subscription_id not in group_history:
@@ -125,12 +133,6 @@ async def sessions_list(message: Message):
         for session in sessions:
             text += session.display_text() + '\n'
         text += '\n\n'
-    keyboard = InlineKeyboardMarkup()
-    if prev_month_exists_history:
-        keyboard.add(make_prev_month_inline_btn(
-            f'{prev_month.year}__{prev_month.month}'
-        ))
-    keyboard.add(make_cancel_inline_btn())
     await message.answer(text, reply_markup=keyboard)
 
 
